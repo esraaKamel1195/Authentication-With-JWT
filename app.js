@@ -1,6 +1,8 @@
 require("dotenv").config();
 require("./config/database").connect();
 const express = require("express");
+const bcrypt = require("bcryptjs");
+const jWt = require("jsonwebtoken");
 
 const app = express();
 
@@ -10,7 +12,7 @@ app.use(express.json());
 
 // Register
 app.post("/register", async (req, res) => {
-    
+
     // our register logic goes here...
     try {
         const { first_name, last_name, email, password } = req.body;
@@ -27,7 +29,7 @@ app.post("/register", async (req, res) => {
 
         encryptedPassword = await bcrypt.hash(password, 10);
 
-        const user = await User.Create({
+        const user = await User.create({
             first_name,
             last_name,
             email: email.toLowerCase(),
@@ -36,7 +38,7 @@ app.post("/register", async (req, res) => {
 
         const token = jWt.sign(
             { user_id: user._id , email },
-            process.env.TOKEN_KEY,
+            'secret',
             {
                 expiresIn: "2h",
             }
