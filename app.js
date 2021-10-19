@@ -2,7 +2,7 @@ require("dotenv").config();
 require("./config/database").connect();
 const express = require("express");
 const bcrypt = require("bcryptjs");
-const jWt = require("jsonwebtoken");
+const jwt = require("jsonwebtoken");
 
 const app = express();
 
@@ -36,7 +36,7 @@ app.post("/register", async (req, res) => {
             password: encryptedPassword
         });
 
-        const token = jWt.sign(
+        const token = jwt.sign(
             { user_id: user._id , email },
             'secret',
             {
@@ -53,8 +53,36 @@ app.post("/register", async (req, res) => {
 });
 
 // Login
-app.post("/login", (req, res) => {
+app.post("/login", async (req, res) => {
     // our login logic goes here
+    try {
+        const { email, password } = req.body;
+    
+        if (!(email && password)) {
+          res.status(400).send("All input is required");
+        }
+
+        const user = await User.findOne({ email });
+
+        if ( user && ( await bcrypt.compare( password, user.password ))) {
+            const token = jwt.sign (
+                { user_id: user._id, email },
+                'secret',
+                {
+                  expiresIn: "2h",
+                }
+            );
+        
+            user.token = token;
+        
+            res.status(200).json(user);
+        }
+
+        res.status(400).send("Invalid Credentials");
+        
+    } catch(err) {
+        console.log(err);
+    }
 });
 
 module.exports = app;
