@@ -7,6 +7,7 @@ const jwt = require("jsonwebtoken");
 const app = express();
 
 const User = require("./model/user");
+const auth = require("./middleware/auth");
 
 app.use(express.json());
 
@@ -38,7 +39,7 @@ app.post("/register", async (req, res) => {
 
         const token = jwt.sign(
             { user_id: user._id , email },
-            'secret',
+                process.env.TOKEN_KEY,
             {
                 expiresIn: "2h",
             }
@@ -67,7 +68,7 @@ app.post("/login", async (req, res) => {
         if ( user && ( await bcrypt.compare( password, user.password ))) {
             const token = jwt.sign (
                 { user_id: user._id, email },
-                'secret',
+                    process.env.TOKEN_KEY,
                 {
                   expiresIn: "2h",
                 }
@@ -83,6 +84,10 @@ app.post("/login", async (req, res) => {
     } catch(err) {
         console.log(err);
     }
+});
+
+app.post("/welcome", auth, (req, res) => {
+    res.status(200).send("Welcome 🙌 ");
 });
 
 module.exports = app;
