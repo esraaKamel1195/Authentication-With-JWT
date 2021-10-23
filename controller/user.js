@@ -1,4 +1,3 @@
-// const bodyParser = require('body-parser');
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../model/user");
@@ -80,7 +79,7 @@ exports.login = async (req, res, next) => {
             err.status = 403;
             return next(err);
         }
-        else if (user.password !== password) {
+        else if ( !( await bcrypt.compare( password, user.password ))) {
             var err = new Error('Your password is incorrect!');
             err.status = 403;
             return next(err);
