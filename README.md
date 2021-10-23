@@ -1,7 +1,8 @@
 Documentations
 
   Thinking Process:
-    - At first creating package.json and installing important modules such as ( express, mongodb, mongoose, dotenv, nodemon, jsonwebtoken, bcryptjs) 
+  
+    - At first creating package.json and installing important modules such as ( express, mongodb, mongoose, dotenv, nodemon, jsonwebtoken, bcryptjs).
     - Second creating folders and files to build project structure.
     - Using config folder and created file database.js to create connection with mongodb server using mongoose.
     - Using user.js controller file inside controller folder to implement nessary apis (register, login, logout).
@@ -32,5 +33,6 @@ Documentations
       - If there any issue not allow to user make the action as user not authenticated.
       
  Useful Resources:
+ 
     - https://www.section.io/engineering-education/how-to-build-authentication-api-with-jwt-token-in-nodejs/ which explain who to use JWt in authentication.
     - https://www.coursera.org/learn/server-side-nodejs/ this course which I already studing in it.
