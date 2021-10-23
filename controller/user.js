@@ -75,7 +75,7 @@ exports.login = async (req, res, next) => {
         const user = await User.findOne({ email });
 
         if (user === null) {
-            var err = new Error('User ' + username + ' does not exist!');
+            var err = new Error('User ' + email +  ' does not exist!');
             err.status = 403;
             return next(err);
         }
