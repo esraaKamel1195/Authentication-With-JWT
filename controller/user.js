@@ -111,6 +111,7 @@ exports.logout = ( req, res ) => {
     if (req.session && (req.body.token || req.query.token || req.headers["x-access-token"])) {
         req.session.destroy();
         res.clearCookie('session-id');
+        req.body.token = req.query.token = req.headers["x-access-token"] = "";
         res.redirect('/');
     }
     else {
