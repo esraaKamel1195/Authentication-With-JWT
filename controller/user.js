@@ -97,7 +97,7 @@ exports.login = async (req, res, next) => {
 
             res.statusCode = 200;
             res.setHeader('Content-Type', 'text/plain');
-            res.end('You are authenticated!')
+            res.json({status: 'Login Successful!', user: user});
         }
         
     } catch(err) {
