@@ -1,93 +1,51 @@
 require("dotenv").config();
 require("./config/database").connect();
 const express = require("express");
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
+
+
+const session = require('express-session');
+const FileStore = require('session-file-store')(session);
+const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
 
 const app = express();
 
-const User = require("./model/user");
+const userRoute = require("./router/user");
 const auth = require("./middleware/auth");
 
 app.use(express.json());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(cookieParser());
 
-// Register
-app.post("/register", async (req, res) => {
+app.use(session({
+  name: 'session-id',
+  secret: '12345-67890-09876-54321',
+  saveUninitialized: false,
+  resave: false,
+  store: new FileStore()
+}));
 
-    // our register logic goes here...
-    try {
-        const { first_name, last_name, email, password } = req.body;
-
-        if(!( email && first_name && last_name && password )) {
-            res.status(400).send("All inputs is required");
-        }
-
-        const oldUser = await User.findOne({ email });
-
-        if(oldUser) {
-            return res.status(409).send("User Already Exist. Please Login");
-        }
-
-        encryptedPassword = await bcrypt.hash(password, 10);
-
-        const user = await User.create({
-            first_name,
-            last_name,
-            email: email.toLowerCase(),
-            password: encryptedPassword
-        });
-
-        const token = jwt.sign(
-            { user_id: user._id , email },
-                process.env.TOKEN_KEY,
-            {
-                expiresIn: "2h",
-            }
-        );
-
-        user.token = token;
-
-        res.status(201).json(user);
-    } catch (err) {
-        console.log(err);
-    }
-});
-
-// Login
-app.post("/login", async (req, res) => {
-    // our login logic goes here
-    try {
-        const { email, password } = req.body;
-    
-        if (!(email && password)) {
-          res.status(400).send("All input is required");
-        }
-
-        const user = await User.findOne({ email });
-
-        if ( user && ( await bcrypt.compare( password, user.password ))) {
-            const token = jwt.sign (
-                { user_id: user._id, email },
-                    process.env.TOKEN_KEY,
-                {
-                  expiresIn: "2h",
-                }
-            );
-        
-            user.token = token;
-        
-            res.status(200).json(user);
-        }
-
-        res.status(400).send("Invalid Credentials");
-        
-    } catch(err) {
-        console.log(err);
-    }
-});
+app.use( "/user", userRoute );
 
 app.post("/welcome", auth, (req, res) => {
     res.status(200).send("Welcome 🙌 ");
+});
+
+// catch 404 and forward to error handler
+app.use(function(req, res, next) {
+  next(createError(404));
+});
+
+// error handler
+app.use(function(err, req, res, next) {
+  // set locals, only providing error in development
+  res.locals.message = err.message;
+  res.locals.error = req.app.get('env') === 'development' ? err : {};
+
+  // render the error page
+  res.status(err.status || 500);
+  res.render('error');
 });
 
 module.exports = app;
