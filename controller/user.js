@@ -10,50 +10,48 @@ exports.register = async (req, res, next) => {
         const { first_name, last_name, email, password } = req.body;
 
         if(!( email && first_name && last_name && password )) {
-
-            var err = new Error("All inputs is required");
-            err.status = 400;
-            next(err);
-        }
-
-        const oldUser = await User.findOne({ email: email });
-
-        if(oldUser) {
-
-            var err = new Error('User ' + req.body.first_name + ' ' + req.body.last_name + ' already exists! Please Login');
-            err.status = 403;
-            next(err);
-        }
-
-        encryptedPassword = await bcrypt.hash(password, 10);
-
-        const user = await User.create({
-            first_name,
-            last_name,
-            email: email.toLowerCase(),
-            password: encryptedPassword,
-            admin: req.body.admin || false
-        })
-        .then((user) => {
-            const token = jwt.sign(
-                {   user_id: user._id , email },
-                    process.env.TOKEN_KEY,
-                {
-                    expiresIn: "2h",
-                }
-            );
-
-            req.session.user = 'authenticated';
-
-            user.token = token;
-
-            res.statusCode = 200;
+            console.log('done');
+            res.statusCode = 400;
             res.setHeader('Content-Type', 'application/json');
-            res.json({status: 'Registration Successful!', user: user});
+            res.json("All inputs is required");
+        }
+        else {
+            const oldUser = await User.findOne({ email: email });
 
-        }, (err) => next(err))
-        .catch((err) => next(err));
+            if(oldUser) {
+                res.statusCode = 403;
+                res.setHeader('Content-Type', 'application/json');
+                res.json({ status: "User already exists! Please Login" });
 
+            } else {
+                if(password) encryptedPassword = await bcrypt.hash(password, 10);
+
+            const user = await User.create({
+                first_name,
+                last_name,
+                email: email.toLowerCase(),
+                password: encryptedPassword,
+                admin: req.body.admin || false
+            })
+            .then((user) => {
+                const token = jwt.sign(
+                    {   user_id: user._id , email },
+                        process.env.TOKEN_KEY,
+                    {
+                        expiresIn: "2h",
+                    }
+                );
+
+                req.session.user = 'authenticated';
+
+                user.token = token;
+
+                res.statusCode = 200;
+                res.setHeader('Content-Type', 'application/json');
+                res.json({status: 'Registration Successful!', user: user});
+            }, (err) => next(err))
+            .catch((err) => next(err));
+        }}
     } catch (err) {
         next(err);
     }
@@ -86,6 +84,7 @@ exports.login = async (req, res, next) => {
         }
         else if (user.email === email && ( await bcrypt.compare( password, user.password ))) {
             req.session.user = 'authenticated';
+            
             const token = jwt.sign (
                 { user_id: user._id, email },
                     process.env.TOKEN_KEY,
@@ -93,6 +92,7 @@ exports.login = async (req, res, next) => {
                   expiresIn: "2h",
                 }
             );
+            
             user.token = token;
 
             res.statusCode = 200;

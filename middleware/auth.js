@@ -3,7 +3,8 @@ const config = process.env;
 
 const auth = (req, res, next) => {
     const token = req.body.token || req.query.token || req.headers["x-access-token"];
-
+    console.log(token);
+    console.log(req.session.user);
     if(!token && !req.session.user) {
         var err = new Error('You are not authenticated!');
         err.status = 403;
@@ -18,7 +19,7 @@ const auth = (req, res, next) => {
             catch(err) {
                res.status(401).send("Invalid token");
             }
-            next();
+            return next();
         }
         else {
             var err = new Error('You are not authenticated!');
