@@ -27,12 +27,14 @@ app.use((req, res, next) => {
   next();
 });
 
+const twoHour = 2 * 60 ;
+
 app.use(session({
   name: 'session-id',
   secret: '12345-67890-09876-54321',
   saveUninitialized: false,
   resave: false,
-  store: new FileStore()
+  cookie: { maxAge: twoHour },
 }));
 
 app.get("/welcome", auth, (req, res) => {
