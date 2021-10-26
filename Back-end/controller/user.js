@@ -39,7 +39,7 @@ exports.register = async (req, res, next) => {
                             email: email,
                             role: admin? 'admin' : 'user'
                         },
-                            process.env.TOKEN_KEY,
+                        "secret",
                         {
                             expiresIn: "2h",
                         }
@@ -95,7 +95,7 @@ exports.login = async (req, res, next) => {
                         email: user.email,
                         role: user.admin? 'admin' : 'user'
                     },
-                        process.env.TOKEN_KEY,
+                        "secret",
                     {
                         expiresIn: "2h",
                     }
@@ -118,8 +118,9 @@ exports.login = async (req, res, next) => {
 
 exports.logout = ( req, res ) => {
     console.log(req.session);
-    console.log(req.body.token || req.query.token || req.headers["x-access-token"])
+    console.log(req.body.token);
     if (req.session && (req.body.token || req.query.token || req.headers["x-access-token"])) {
+        console.log('done')
         req.session.destroy();
         req.body.token = req.query.token = req.headers["x-access-token"] = "";
         res.send("You are logged out now!");
@@ -129,4 +130,8 @@ exports.logout = ( req, res ) => {
         res.setHeader('Content-Type', 'application/json');
         res.send("You are not logged in!");
     }
+}
+
+exports.welcome = (req, res) => {
+    res.status(200).send("Welcome 🙌 ");
 }

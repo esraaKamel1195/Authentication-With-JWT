@@ -39,15 +39,17 @@ export class UserService {
     }
 
     logout(token: any) {
-        this.http.get<any>(this.url + '/logout', token).subscribe((res)=>{
+        console.log(token);
+        this.http.post<any>(this.url + '/logout', {token}).subscribe((res)=>{
             console.log(res);
-            // if( res == 200) {
+            if( res.statusCode == 200) {
                 alert(res);
                 localStorage.removeItem("token");
                 this.router.navigate(['/login']);
-    
-        }, (error)=>{
-            alert("you are not login");
+            }
+            else {
+                alert("you are not login");
+            }
         });
     }        
 

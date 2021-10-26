@@ -10,7 +10,6 @@ const bodyParser = require('body-parser');
 const app = express();
 
 const userRoute = require("./router/user");
-const auth = require("./middleware/auth");
 
 app.use(express.json());
 app.use(bodyParser.json());
@@ -27,7 +26,6 @@ app.use((req, res, next) => {
   next();
 });
 
-const twoHour = 2 * 60 ;
 
 app.use(session({
   name: 'session-id',
@@ -37,9 +35,6 @@ app.use(session({
   store: new FileStore()
 }));
 
-app.get("/welcome", auth, (req, res) => {
-  res.status(200).send("Welcome 🙌 ");
-});
 
 app.use( "/user", userRoute );
 

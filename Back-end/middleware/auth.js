@@ -2,29 +2,28 @@ const jwt = require("jsonwebtoken");
 const config = process.env;
 
 const auth = (req, res, next) => {
+    console.log(req.headers );
+    console.log(req.body)
     const token = req.body.token || req.query.token || req.headers["x-access-token"];
-    console.log(req.session.user);
+    console.log(token);
     if(!token && !req.session.user) {
-        console.log("step 1");
         res.status(403).json({ message: 'You are not authenticated!' });
     }
     else {
         if (req.session.user === 'authenticated') {
-            console.log("step 2");
             try {
-                console.log("step 3");
-                const decoded = jwt.verify( token, config.TOKEN_KEY );
-                console.log(decoded);
-                req.user = decoded;
+                const decoded = jwt.verify( token, "secret");
+                const roles = _.intersection([decodedToken.role] , allowedRoles);
+                if (roles.length > 0) {
+                    req.user = decoded;
+                    next();
+                }
             }
             catch(err) {
-                console.log("step 4");
-               res.status(401).send("Invalid token");
+                res.status(401).send("Invalid token");
             }
-            return next();
         }
         else {
-            console.log("step 5");
             res.status(403).json({ message: 'You are not authenticated!' });
         }
     }
