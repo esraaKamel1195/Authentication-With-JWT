@@ -1,1 +1,19 @@
 /* You can add global styles to this file, and also import other style files */
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.container {
+    text-align: center;
+    padding: 10% 20%;
+}
+
+.mat-form-field {
+    display: block !important;
+}
+
+button {
+    display: block;
+    width: 100%;
+    height: 40px;
+}

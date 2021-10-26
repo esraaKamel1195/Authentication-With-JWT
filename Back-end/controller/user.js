@@ -12,7 +12,7 @@ exports.register = async (req, res, next) => {
         if(!( email && first_name && last_name && password )) {
             res.statusCode = 400;
             res.setHeader('Content-Type', 'application/json');
-            res.json("All inputs is required");
+            res.send("All inputs is required");
         }
         else {
             const oldUser = await User.findOne({ email: email });
@@ -20,7 +20,7 @@ exports.register = async (req, res, next) => {
             if(oldUser) {
                 res.statusCode = 403;
                 res.setHeader('Content-Type', 'application/json');
-                res.json({ status: "User already exists! Please Login" });
+                res.send({ status: "User already exists! Please Login" });
 
             } else {
                 if(password) encryptedPassword = await bcrypt.hash(password, 10);
@@ -51,7 +51,7 @@ exports.register = async (req, res, next) => {
 
                     res.statusCode = 200;
                     res.setHeader('Content-Type', 'application/json');
-                    res.json({status: 'Registration Successful!', user: user});
+                    res.send({status: 'Registration Successful!', user: user});
                 }, (err) => next(err))
                 .catch((err) => next(err));
             }
@@ -78,7 +78,7 @@ exports.login = async (req, res, next) => {
             if (user === null) {
                 res.statusCode = 403;
                 res.setHeader('Content-Type', 'application/json');
-                res.json({ status: "User does not exist! Please register" });
+                res.send({ status: "User does not exist! Please register" });
             }
             else if ( !( await bcrypt.compare( password, user.password ))) {
                 res.statusCode = 403;
@@ -86,6 +86,7 @@ exports.login = async (req, res, next) => {
                 res.json({ status: "Your password is incorrect!" });
             }
             else if (user.email === email && ( await bcrypt.compare( password, user.password ))) {
+                
                 req.session.user = 'authenticated';
                 
                 const token = jwt.sign (
@@ -104,7 +105,7 @@ exports.login = async (req, res, next) => {
     
                 res.statusCode = 200;
                 res.setHeader('Content-Type', 'text/plain');
-                res.json({status: 'Login Successful!', user: user});
+                res.send({status: 'Login Successful!', user: user});
             }
         }
 
@@ -116,14 +117,16 @@ exports.login = async (req, res, next) => {
 // logout**************************************************
 
 exports.logout = ( req, res ) => {
+    console.log(req.session);
+    console.log(req.body.token || req.query.token || req.headers["x-access-token"])
     if (req.session && (req.body.token || req.query.token || req.headers["x-access-token"])) {
         req.session.destroy();
         req.body.token = req.query.token = req.headers["x-access-token"] = "";
-        res.json("You are logged out now!");
+        res.send("You are logged out now!");
     }
     else {
         res.statusCode = 403;
         res.setHeader('Content-Type', 'application/json');
-        res.json("You are not logged in!");
+        res.send("You are not logged in!");
     }
 }

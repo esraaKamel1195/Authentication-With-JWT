@@ -34,7 +34,7 @@ app.use(session({
   secret: '12345-67890-09876-54321',
   saveUninitialized: false,
   resave: false,
-  cookie: { maxAge: twoHour },
+  store: new FileStore()
 }));
 
 app.get("/welcome", auth, (req, res) => {
