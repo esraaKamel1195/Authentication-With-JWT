@@ -12,9 +12,9 @@ router.post('/login', UserController.login );
 
 router.post('/logout', UserController.logout );
 
-router.get("/welcome", auth , UserController.welcome);
+// router.get("/welcome", auth , UserController.welcome);
 
 // not work
-// router.get("/welcome", _.partial(auth, ['admin','user']) , UserController.welcome);
+router.get("/welcome", _.partial(auth, ['admin','user']) , UserController.welcome);
 
 module.exports = router;

@@ -1,9 +1,7 @@
 const jwt = require("jsonwebtoken");
 const config = process.env;
 
-const auth = (req, res, next) => {
-    console.log(req.headers );
-    console.log(req.body)
+const auth = ( roles, req, res, next) => {
     const token = req.body.token || req.query.token || req.headers["x-access-token"];
     console.log(token);
     if(!token && !req.session.user) {
@@ -13,7 +11,7 @@ const auth = (req, res, next) => {
         if (req.session.user === 'authenticated') {
             try {
                 const decoded = jwt.verify( token, "secret");
-                const roles = _.intersection([decodedToken.role] , allowedRoles);
+                const roles = _.intersection([decodedToken.role] , roles);
                 if (roles.length > 0) {
                     req.user = decoded;
                     next();
