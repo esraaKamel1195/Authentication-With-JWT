@@ -62,7 +62,6 @@ exports.register = async (req, res, next) => {
 }
 
 // login**************************************************
-
 exports.login = async (req, res, next) => {
     // login logic goes here
     try {
@@ -115,7 +114,6 @@ exports.login = async (req, res, next) => {
 }
 
 // logout**************************************************
-
 exports.logout = ( req, res ) => {
     console.log(req.session);
     console.log(req.body.token);
@@ -133,5 +131,5 @@ exports.logout = ( req, res ) => {
 }
 
 exports.welcome = (req, res) => {
-    res.status(200).send("Welcome 🙌 ");
+    res(200).send("Welcome 🙌 ");
 }

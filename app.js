@@ -1,7 +1,6 @@
 require("dotenv").config();
 require("./config/database").connect();
 const express = require("express");
-
 const session = require('express-session');
 const FileStore = require('session-file-store')(session);
 const cookieParser = require('cookie-parser');
